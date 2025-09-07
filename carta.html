@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Carta para Mamá — Feliz Cumpleaños</title>
+  <style>
+    :root{
+      --bg1: #f8e8ff;
+      --grad1: linear-gradient(135deg,#a67bd6 0%, #d57bd8 50%, #ff9ccf 100%);
+      --card-bg: rgba(255,255,255,0.9);
+      --accent: #7a3fa8;
+      --warm-shadow: rgba(250,150,200,0.15);
+      --glass: rgba(255,255,255,0.5);
+      --text: #3b2240;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+      background: radial-gradient(circle at 10% 10%, rgba(255,230,240,0.18), transparent 10%),
+                  radial-gradient(circle at 90% 90%, rgba(230,210,255,0.12), transparent 10%),
+                  var(--grad1);
+      font-family: Inter, System-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      color:var(--text);
+      padding:32px;
+    }
+
+    .container{
+      width:100%;max-width:600px;background:transparent;border-radius:20px;padding:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    }
+
+    .title{font-size:1.6rem;font-weight:700;margin-bottom:6px;color:#3b1650;text-align:center}
+    .subtitle{font-size:0.95rem;color:#5a3a62;text-align:center;margin-bottom:18px}
+
+    .envelope-wrap{position:relative;width:500px;max-width:90%;height:350px;perspective:1200px;margin-bottom:18px}
+
+
+    .envelope{
+      width:100%;height:100%;position:absolute;left:0;top:0;
+      transform-style:preserve-3d;transition:transform 900ms cubic-bezier(.2,.95,.2,1);
+    }
+
+    .flap{
+      position:absolute;left:0;right:0;top:0;height:60%;background:linear-gradient(180deg,#ffdff4 0%, rgba(255,255,255,0.6)100%);
+      border-radius:8px 8px 0 0;transform-origin:top center;box-shadow:0 8px 24px rgba(120,40,120,0.18) inset;
+      display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--accent);
+    }
+
+    .body{
+      position:absolute;left:0;right:0;bottom:0;top:40%;background:var(--card-bg);border-radius:0 0 12px 12px;padding:18px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid rgba(120,60,120,0.08)
+    }
+
+    
+    .letter{
+      width:92%;height:100%;background:linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.92));border-radius:10px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,0.06);transform:translateY(100%);transition:transform 700ms ease, opacity 400ms;opacity:0;overflow:auto;
+      font-size:1rem;line-height:1.55;
+    }
+
+    .letter.open{transform:translateY(0);opacity:1}
+
+    
+    .envelope.open .flap{transform:rotateX(-180deg)}
+    .envelope.open{transform:translateY(-6px)}
+
+    .controls{display:flex;gap:12px;margin-top:8px}
+    button{
+      border:0;padding:12px 18px;border-radius:12px;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(120,60,120,0.12);backdrop-filter: blur(4px);
+    }
+    .btn-open{background:linear-gradient(90deg,#ff8cc7,#c77bd8);color:white}
+    .btn-reset{background:transparent;border:2px solid rgba(255,255,255,0.18);color:rgba(60,20,70,0.9);}
+
+    .signature{margin-top:14px;text-align:right;font-weight:600}
+
+    
+    .typed{white-space:pre-wrap}
+    .caret{display:inline-block;width:2px;height:1.1em;background:var(--accent);margin-left:4px;vertical-align:bottom;animation:blink 1s infinite}
+    @keyframes blink{50%{opacity:0}}
+
+    
+    @media (max-width:580px){
+      .envelope-wrap{width:100%;height:280px}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">Para ti mamá, con amor</div>
+    <div class="subtitle">Presiona <strong>Abrir</strong> para leer la carta.</div>
+
+    <div class="envelope-wrap" aria-hidden="false">
+      <div class="envelope" id="envelope">
+        <div class="flap">💜</div>
+        <div class="body">
+          <div class="letter" id="letter" aria-live="polite">
+            <div class="typed" id="typed"></div><div class="caret" id="caret"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls" role="group" aria-label="Controles de la carta">
+      <button class="btn-open" id="openBtn">Abrir</button>
+      <button class="btn-reset" id="resetBtn">Restaurar</button>
+    </div>
+  </div>
+
+  <script>
+    
+    const cartaTexto = `Querida mamá,\n\nHoy es un dia muy especial y queria aprovecharlo para agradecerte por todo lo que eres y lo que significas para mi.\n\nEres la persona que siempre me ha acompañado en mis momentos de alegría y tambien en los malos, la que me ha enseñado, me ha apoyado y me ha dado fuerzas cuando mas lo necesitaba.\n\nNo tengo las palabras suficientes para decirte lo agradecida que estoy por tenerte como mamá. Admiro todo de ti, tu fortaleza y la manera en que siempre encuentras una razón para sonreir incluso cuando los dias son difíciles.\n\nDeseo que este cumpleaños te traiga la misma felicidad que nos regalas a quienes tenemos la dicha de estar a tu lado. Espero que la vida te de salud, paz, amor y muchos buenos momentos, porque lo mereces.\n\nGracias por ser mi madre. Te amo mucho.`;
+
+    
+    const openBtn = document.getElementById('openBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const envelope = document.getElementById('envelope');
+    const typedEl = document.getElementById('typed');
+    const caret = document.getElementById('caret');
+    const letter = document.getElementById('letter');
+
+    let typingTimer = null;
+
+    function typeText(text, el, speed = 20) {
+      el.textContent = '';
+      let i = 0;
+      caret.style.display = 'inline-block';
+      return new Promise((resolve) => {
+        typingTimer = setInterval(() => {
+          if (i >= text.length) {
+            clearInterval(typingTimer);
+            caret.style.display = 'none';
+            resolve();
+            return;
+          }
+          const ch = text[i++];
+          el.textContent += ch;
+        }, speed);
+      });
+    }
+
+    async function abrirCarta(){
+
+      envelope.classList.add('open');
+      
+      setTimeout(()=>{
+        letter.classList.add('open');
+      }, 350);
+      
+      await new Promise(r=>setTimeout(r,500));
+      await typeText(cartaTexto, typedEl, 28);
+    }
+
+    function restaurar(){
+      
+      if (typingTimer) clearInterval(typingTimer);
+      typedEl.textContent = '';
+      letter.classList.remove('open');
+      envelope.classList.remove('open');
+      caret.style.display = 'inline-block';
+    }
+
+    openBtn.addEventListener('click', async ()=>{
+      
+      if (typedEl.textContent.trim().length > 0) return;
+      abrirCarta();
+    });
+
+    resetBtn.addEventListener('click', ()=>{
+      restaurar();
+    });
+
+    
+    [openBtn, resetBtn].forEach(b=>b.addEventListener('keydown', (e)=>{ if(e.key==='Enter') e.target.click(); }));
+
+    
+    window.addEventListener('load', ()=>{
+      setTimeout(()=>{
+        envelope.animate([
+          { transform: 'translateY(-4px)' },
+          { transform: 'translateY(0px)' }
+        ], { duration: 900, easing: 'cubic-bezier(.2,.95,.2,1)' });
+      }, 200);
+    });
+
+  </script>
+</body>
+</html>
